@@ -4,6 +4,7 @@ import java.net.*;
 
 public class server {
     public static void main(String[] args) {
+
         try {
             // Skapa en server socket på port 12345
             ServerSocket serverSocket = new ServerSocket(12345);

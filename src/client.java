@@ -2,10 +2,11 @@ import java.io.*;
 import java.net.*;
 
 public class client {
-    public static void main(String[] args) {
+    public static void main(String ip) {
+        System.out.println("Klient startad");
         try {
-            // Skapa en socket och anslut till servern på IP 192.168.1.10 och port 12345
-            Socket socket = new Socket("192.168.1.10", 12345); // Ändra IP-adressen till serverns IP
+            // Skapa en socket och anslut till servern på IP localhost och port 12345
+            Socket socket = new Socket(ip, 12345); // Ändra IP-adressen till serverns IP
 
             // Skapa in- och utström för att skicka och ta emot data
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
