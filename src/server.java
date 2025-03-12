@@ -51,8 +51,8 @@ public class server {
                 e.printStackTrace();
             } finally {
                 try {
-                    //broadcastMessage("SERVER_EXIT");
-                    //socket.close();
+                    broadcastMessage("SERVER_EXIT");
+                    socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
