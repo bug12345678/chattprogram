@@ -4,7 +4,7 @@ import java.net.*;
 public class client {
     public static void main(String ip) throws IOException {
         Socket socket = new Socket(ip, 5000);
-        System.out.println("Ansluten till chattservern!");
+        System.out.println("[KLIENT] Ansluten till chattservern!");
 
         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
@@ -26,12 +26,12 @@ public class client {
         String userInput;
         while ((userInput = consoleInput.readLine()) != null) {
             output.println(userInput);
-            if (userInput.equalsIgnoreCase("exit")) {
+            if (userInput.equalsIgnoreCase("[KLIENT] exit")) {
                 break;
             }
         }
 
         socket.close();
-        System.out.println("Du har lämnat chatten.");
+        System.out.println("[KLIENT] Du har lämnat chatten.");
     }
 }
