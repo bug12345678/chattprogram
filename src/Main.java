@@ -19,7 +19,7 @@ public class Main {
         if (val.equals("s")){
             System.out.println("Server");
             new Thread(() -> {
-                try {
+                try { // Error Handler
                     server.main(null);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
