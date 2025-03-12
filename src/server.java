@@ -7,11 +7,11 @@ public class server {
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(5000);
-        System.out.println("Chattservern startad på port 5000...");
+        System.out.println("[SERVER] Chattservern startad på port 5000...");
 
         while (true) {
             Socket clientSocket = serverSocket.accept(); // Väntar på en ny klient
-            System.out.println("Ny klient ansluten: " + clientSocket.getInetAddress());
+            System.out.println("[SERVER] Ny klient ansluten: " + clientSocket.getInetAddress());
 
             // Skapa en ny tråd för att hantera klienten
             new ClientHandler(clientSocket).start();
@@ -37,15 +37,15 @@ public class server {
                     clientOutputs.add(output);
                 }
 
-                output.println("Välkommen till chatten! Skriv 'exit' för att lämna.");
+                output.println("[SERVER] Välkommen till chatten! Skriv 'exit' för att lämna.");
 
                 String message;
                 while ((message = input.readLine()) != null) {
                     if (message.equalsIgnoreCase("exit")) {
                         break;
                     }
-                    System.out.println("Meddelande från klient: " + message);
-                    broadcastMessage("Klient: " + message);
+                    System.out.println("[SERVER] Meddelande från klient: " + message);
+                    broadcastMessage("[SERVER] Klient: " + message);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -58,7 +58,7 @@ public class server {
                 synchronized (clientOutputs) {
                     clientOutputs.remove(output);
                 }
-                System.out.println("En klient har lämnat.");
+                System.out.println("[SERVER] En klient har lämnat.");
             }
         }
 
