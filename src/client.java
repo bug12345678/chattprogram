@@ -16,7 +16,7 @@ public class client {
                 String serverMessage;
                 Boolean close = Boolean.FALSE;
                 while ((serverMessage = input.readLine()) != null) {
-                    if (!serverMessage.equals("SERVER_EXIT")) {
+                    if (serverMessage.equals("SERVER_EXIT")) {
                         close = Boolean.TRUE;
                         break;
                     }
