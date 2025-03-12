@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.lang.Runtime;
 
 public class server {
     private static Set<PrintWriter> clientOutputs = Collections.synchronizedSet(new HashSet<>());
@@ -16,6 +17,8 @@ public class server {
             // Skapa en ny tråd för att hantera klienten
             new ClientHandler(clientSocket).start();
         }
+
+        Runtime serverHeter = Runtime.getRuntime();
     }
 
     static class ClientHandler extends Thread {
