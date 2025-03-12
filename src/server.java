@@ -1,14 +1,25 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.lang.Runtime;
 
 public class server {
     private static Set<PrintWriter> clientOutputs = Collections.synchronizedSet(new HashSet<>());
 
-    public static void main(String[] args) throws IOException {
+    public static void main() throws IOException {
         ServerSocket serverSocket = new ServerSocket(5000);
         System.out.println("[SERVER] Chattservern startad på port 5000...");
+
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            public void close(){
+                try {
+                    ClientHandler.broadcastMessage("");
+                    serverSocket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
 
         while (true) {
             Socket clientSocket = serverSocket.accept(); // Väntar på en ny klient
@@ -18,16 +29,6 @@ public class server {
             new ClientHandler(clientSocket).start();
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            public void close(){
-                try {
-                    serverSocket.close("5000");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        });
     }
 
     static class ClientHandler extends Thread {
@@ -74,7 +75,7 @@ public class server {
             }
         }
 
-        private void broadcastMessage(String message) {
+        public static void broadcastMessage(String message) {
             synchronized (clientOutputs) {
                 for (PrintWriter writer : clientOutputs) {
                     writer.println(message);
