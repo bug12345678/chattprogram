@@ -18,7 +18,16 @@ public class server {
             new ClientHandler(clientSocket).start();
         }
 
-        Runtime serverHeter = Runtime.getRuntime();
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            public void close(){
+                try {
+                    serverSocket.close("5000");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
     }
 
     static class ClientHandler extends Thread {
@@ -54,7 +63,6 @@ public class server {
                 e.printStackTrace();
             } finally {
                 try {
-                    broadcastMessage("SERVER_EXIT");
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
