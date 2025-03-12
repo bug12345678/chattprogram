@@ -32,7 +32,7 @@ public class client {
         String userInput;
         while ((userInput = consoleInput.readLine()) != null) {
             output.println(userInput);
-            if (userInput.equalsIgnoreCase("[KLIENT] exit")) {
+            if (userInput.equalsIgnoreCase("exit")) {
                 break;
             }
         }
