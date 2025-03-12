@@ -19,7 +19,11 @@ public class Main {
         if (val.equals("s")){
             System.out.println("Server");
             new Thread(() -> {
-                server.main(null);
+                try {
+                    server.main(null);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }).start();
             System.out.println("Server skapad, kopplar...");
             Thread.sleep(2000);
