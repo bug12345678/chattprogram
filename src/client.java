@@ -6,7 +6,7 @@ public class client {
         System.out.println("Klient startad");
         try {
             // Skapa en socket och anslut till servern på IP localhost och port 12345
-            Socket socket = new Socket(ip, 12345); // Ändra IP-adressen till serverns IP
+            Socket socket = new Socket(ip, 5000); // Ändra IP-adressen till serverns IP
 
             // Skapa in- och utström för att skicka och ta emot data
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
