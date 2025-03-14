@@ -12,7 +12,7 @@ public class server {
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void close(){
                 try {
-                    ClientHandler.broadcastMessage("");
+                    ClientHandler.broadcastMessage("SERVER_EXIT");
                     serverSocket.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
