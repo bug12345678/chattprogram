@@ -63,7 +63,6 @@ public class server {
                 String message;
                 while ((message = input.readLine()) != null) {
                     if (message.equalsIgnoreCase("exit")) {
-
                         break;
                     }
                     System.out.println("[SERVER] Meddelande från klient: " + message);

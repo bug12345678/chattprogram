@@ -42,7 +42,7 @@ public class Main {
                     throw new RuntimeException(e);
                 }
                 System.out.println("Server startad och kopplad. Välkommen!");
-            case "e":
+            case "o":
 
                 System.out.println("Endast server");
                 try {
