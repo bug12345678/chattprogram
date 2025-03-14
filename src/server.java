@@ -13,6 +13,11 @@ public class server {
             public void close(){
                 try {
                     ClientHandler.broadcastMessage("SERVER_EXIT");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     serverSocket.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
