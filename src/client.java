@@ -22,6 +22,7 @@ public class client {
                     }
                     System.out.println(serverMessage);
                 }
+                System.out.println("Server Closed");
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
