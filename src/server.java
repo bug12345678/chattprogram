@@ -16,11 +16,6 @@ public class server {
                     System.out.println("Ska skicka SERVER_EXIT");
                     ClientHandler.broadcastMessage("SERVER_EXIT");
                     System.out.println("Har skickat SERVER_EXIT");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
                     serverSocket.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -48,7 +43,7 @@ public class server {
             this.socket = socket;
         }
 
-        public void run(AutoCloseable serverSocket) {
+        public void run() {
             try {
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output = new PrintWriter(socket.getOutputStream(), true);
@@ -67,12 +62,19 @@ public class server {
                     }
                     System.out.println("[SERVER] Meddelande från klient: " + message);
                     broadcastMessage("[SERVER] Klient: " + message);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    broadcastMessage("SERVER_EXIT");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 System.out.println("I finally-blocket rad 75 server.java");
                 try {
+                    System.out.println("Skickar SERVER_EXIT i finally-blocket rad 77 server.java");
                     broadcastMessage("SERVER_EXIT");
                     socket.close();
                 } catch (IOException e) {
