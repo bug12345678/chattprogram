@@ -11,8 +11,11 @@ public class server {
 
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void close(){
+                System.out.println("Shutdown hook startar");
                 try {
+                    System.out.println("Ska skicka SERVER_EXIT");
                     ClientHandler.broadcastMessage("SERVER_EXIT");
+                    System.out.println("Har skickat SERVER_EXIT");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
