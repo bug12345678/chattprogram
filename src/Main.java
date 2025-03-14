@@ -20,7 +20,6 @@ public class Main {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                break;
 
             case "s":
                 System.out.println("Server");
@@ -42,7 +41,6 @@ public class Main {
                     throw new RuntimeException(e);
                 }
                 System.out.println("Server startad och kopplad. Välkommen!");
-                break;
             case "e":
                 System.out.println("Endast server");
                 try {
@@ -50,10 +48,8 @@ public class Main {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                break;
             default:
                 System.exit(0);
-                break;
         }
     }
 }
