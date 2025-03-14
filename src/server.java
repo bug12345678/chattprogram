@@ -74,15 +74,11 @@ public class server {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    broadcastMessage("SERVER_EXIT");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                System.out.println("I finally-blocket rad 75 server.java");
                 try {
-                    System.out.println("Skickar SERVER_EXIT i finally-blocket rad 77 server.java");
-                    broadcastMessage("SERVER_EXIT");
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
