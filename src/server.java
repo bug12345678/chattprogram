@@ -48,7 +48,7 @@ public class server {
             this.socket = socket;
         }
 
-        public void run() {
+        public void run(AutoCloseable serverSocket) {
             try {
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output = new PrintWriter(socket.getOutputStream(), true);
@@ -63,6 +63,7 @@ public class server {
                 String message;
                 while ((message = input.readLine()) != null) {
                     if (message.equalsIgnoreCase("exit")) {
+
                         break;
                     }
                     System.out.println("[SERVER] Meddelande från klient: " + message);
@@ -71,7 +72,9 @@ public class server {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                System.out.println("I finally-blocket rad 75 server.java");
                 try {
+                    broadcastMessage("SERVER_EXIT");
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();

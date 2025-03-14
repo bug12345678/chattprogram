@@ -6,6 +6,7 @@ public class Main {
         Scanner userchoice = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Starta (k)lient eller (s)erver? ");
         String val = userchoice.nextLine();  // Read user input
+        userchoice = null;
 
         switch (val){
             case "k":
@@ -42,6 +43,7 @@ public class Main {
                 }
                 System.out.println("Server startad och kopplad. Välkommen!");
             case "e":
+
                 System.out.println("Endast server");
                 try {
                     server.main();
