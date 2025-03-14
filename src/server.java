@@ -4,10 +4,13 @@ import java.util.*;
 
 public class server {
     private static Set<PrintWriter> clientOutputs = Collections.synchronizedSet(new HashSet<>());
+    private static String serverIP;
 
     public static void main() throws IOException {
         ServerSocket serverSocket = new ServerSocket(5000);
         System.out.println("[SERVER] Chattservern startad på port 5000...");
+        serverIP = InetAddress.getLocalHost().getHostAddress();
+
 
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void close(){
@@ -38,6 +41,7 @@ public class server {
         private Socket socket;
         private PrintWriter output;
         private BufferedReader input;
+        private String serverIP;
 
         public ClientHandler(Socket socket) {
             this.socket = socket;
@@ -53,11 +57,14 @@ public class server {
                     clientOutputs.add(output);
                 }
 
+                String clientIP = socket.getInetAddress().getHostAddress();
+                System.out.println(clientIP);
+
                 output.println("[SERVER] Välkommen till chatten! Skriv 'exit' för att lämna.");
 
                 String message;
                 while ((message = input.readLine()) != null) {
-                    if (message.equalsIgnoreCase("exit")) {
+                    if (message.equalsIgnoreCase("exit") && (clientIP.equals(serverIP))) {
                         break;
                     }
                     System.out.println("[SERVER] Meddelande från klient: " + message);
