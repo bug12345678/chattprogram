@@ -8,18 +8,18 @@ import java.util.*;
 import java.nio.*;
 
 
-public class server {
-    public static void main(String[] args) {
-        int port = 5000;
+public class server {    private static final int PORT = 12345;
+    private static final Set<SocketChannel> clients = new HashSet<>();
 
+    public static void main(String[] args) {
         try (Selector selector = Selector.open();
              ServerSocketChannel serverChannel = ServerSocketChannel.open()) {
 
-            serverChannel.bind(new InetSocketAddress(port));
+            serverChannel.bind(new InetSocketAddress(PORT));
             serverChannel.configureBlocking(false);
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            System.out.println("Entrådad server startad på port " + port);
+            System.out.println("Chattserver startad på port " + PORT);
 
             while (true) {
                 selector.select(); // Väntar på händelser
@@ -32,7 +32,7 @@ public class server {
                     if (key.isAcceptable()) {
                         acceptClient(selector, serverChannel);
                     } else if (key.isReadable()) {
-                        readData(key);
+                        readAndBroadcastMessage(key);
                     }
                 }
             }
@@ -45,16 +45,22 @@ public class server {
         SocketChannel clientChannel = serverChannel.accept();
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ);
+        clients.add(clientChannel);
+
         System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
+        sendMessage(clientChannel, "Välkommen till chatten!");
+        broadcastMessage("En ny användare har anslutit!", clientChannel);
     }
 
-    private static void readData(SelectionKey key) throws IOException {
+    private static void readAndBroadcastMessage(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int bytesRead = clientChannel.read(buffer);
 
         if (bytesRead == -1) {
+            clients.remove(clientChannel);
             System.out.println("Klient kopplade från: " + clientChannel.getRemoteAddress());
+            broadcastMessage("En användare har lämnat chatten.", clientChannel);
             clientChannel.close();
             key.cancel();
             return;
@@ -64,8 +70,21 @@ public class server {
         String message = new String(buffer.array(), 0, buffer.limit());
         System.out.println("Meddelande från klient: " + message);
 
-        // Skicka tillbaka meddelandet till klienten
-        buffer.flip();
-        clientChannel.write(buffer);
+        broadcastMessage(message, clientChannel);
+    }
+
+    private static void broadcastMessage(String message, SocketChannel sender) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(("Klient säger: " + message).getBytes());
+
+        for (SocketChannel client : clients) {
+            if (client != sender) { // Skicka till alla förutom avsändaren
+                client.write(buffer.duplicate());
+            }
+        }
+    }
+
+    private static void sendMessage(SocketChannel client, String message) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(message.getBytes());
+        client.write(buffer);
     }
 }
