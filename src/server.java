@@ -46,7 +46,7 @@ public class server {    private static final int PORT = 5000;
         clients.add(clientChannel);
 
         System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
-        sendMessage(clientChannel, "Välkommen till chatten!");
+        sendMessage(clientChannel, "Välkommen till chatten!\n");
         broadcastMessage("En ny användare har anslutit!", clientChannel);
     }
 
@@ -66,7 +66,7 @@ public class server {    private static final int PORT = 5000;
 
         buffer.flip();
         String message = new String(buffer.array(), 0, buffer.limit());
-        System.out.println("Meddelande från klient: " + message);
+        System.out.println("Meddelande från klient " + message);
 
         broadcastMessage(message, clientChannel);
     }
