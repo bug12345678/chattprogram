@@ -8,7 +8,7 @@ import java.util.*;
 import java.nio.*;
 
 
-public class server {    private static final int PORT = 12345;
+public class server {    private static final int PORT = 5000;
     private static final Set<SocketChannel> clients = new HashSet<>();
 
     public static void main(String[] args) {
@@ -18,8 +18,6 @@ public class server {    private static final int PORT = 12345;
             serverChannel.bind(new InetSocketAddress(PORT));
             serverChannel.configureBlocking(false);
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-
-            System.out.println("Chattserver startad på port " + PORT);
 
             while (true) {
                 selector.select(); // Väntar på händelser
