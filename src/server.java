@@ -7,8 +7,8 @@ import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.nio.*;
 
-
 public class server {    private static final int PORT = 5000;
+    Dictionary<SocketChannel, String> anvNamn = new Hashtable<>();
     private static final Set<SocketChannel> clients = new HashSet<>();
 
     public static void main(String[] args) {
@@ -46,8 +46,8 @@ public class server {    private static final int PORT = 5000;
         clients.add(clientChannel);
 
         System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
-        sendMessage(clientChannel, "Välkommen till chatten!\n");
-        broadcastMessage("En ny användare har anslutit!", clientChannel);
+        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN");
+        broadcastMessage("En ny användare har anslutit!\n", clientChannel);
     }
 
     private static void readAndBroadcastMessage(SelectionKey key) throws IOException {

@@ -4,6 +4,11 @@ import java.util.Scanner;
 
 public class client {
     public static void main(String ip) throws IOException {
+        Scanner namn = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Välj ett användarnamn:");
+        String användarnamn = namn.nextLine();  // Read user input
+        namn.close();
+
         Socket socket = new Socket(ip, 5000);
         System.out.println("[KLIENT] Ansluten till chattservern!");
 
@@ -11,9 +16,7 @@ public class client {
         PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
 
-        Scanner namn = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Välj ett användarnamn:");
-        String användarnamn = namn.nextLine();  // Read user input
+
 
         // Starta en tråd för att lyssna på inkommande meddelanden
         new Thread(() -> {
@@ -21,6 +24,10 @@ public class client {
                 String serverMessage;
                 Boolean close = Boolean.FALSE;
                 while ((serverMessage = input.readLine()) != null) {
+                    switch (serverMessage){
+                        case "SERVER_EFTERFR_ANVNAMN":
+                            output.println(användarnamn);
+                    }
                     if (serverMessage.equals("SERVER_EXIT")) {
                         close = Boolean.TRUE;
                         break;
