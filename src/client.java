@@ -34,6 +34,7 @@ public class client {
         while ((userInput = consoleInput.readLine()) != null) {
             output.println(userInput);
             if (userInput.equalsIgnoreCase("exit")) {
+
                 break;
             }
         }

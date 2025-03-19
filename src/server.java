@@ -1,94 +1,71 @@
 import java.io.*;
 import java.net.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.nio.*;
+
 
 public class server {
-    private static Set<PrintWriter> clientOutputs = Collections.synchronizedSet(new HashSet<>());
+    public static void main(String[] args) {
+        int port = 5000;
 
-    public static void main() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(5000);
-        System.out.println("[SERVER] Chattservern startad på port 5000...");
+        try (Selector selector = Selector.open();
+             ServerSocketChannel serverChannel = ServerSocketChannel.open()) {
 
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            public void close(){
-                System.out.println("Shutdown hook startar");
-                try {
-                    System.out.println("Ska skicka SERVER_EXIT");
-                    ClientHandler.broadcastMessage("SERVER_EXIT");
-                    System.out.println("Har skickat SERVER_EXIT");
-                    serverSocket.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            serverChannel.bind(new InetSocketAddress(port));
+            serverChannel.configureBlocking(false);
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+            System.out.println("Entrådad server startad på port " + port);
+
+            while (true) {
+                selector.select(); // Väntar på händelser
+
+                Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+                while (keyIterator.hasNext()) {
+                    SelectionKey key = keyIterator.next();
+                    keyIterator.remove();
+
+                    if (key.isAcceptable()) {
+                        acceptClient(selector, serverChannel);
+                    } else if (key.isReadable()) {
+                        readData(key);
+                    }
                 }
-
             }
-        });
-
-        while (true) {
-            Socket clientSocket = serverSocket.accept(); // Väntar på en ny klient
-            System.out.println("[SERVER] Ny klient ansluten: " + clientSocket.getInetAddress());
-
-            // Skapa en ny tråd för att hantera klienten
-            new ClientHandler(clientSocket).start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 
-    static class ClientHandler extends Thread {
-        private Socket socket;
-        private PrintWriter output;
-        private BufferedReader input;
+    private static void acceptClient(Selector selector, ServerSocketChannel serverChannel) throws IOException {
+        SocketChannel clientChannel = serverChannel.accept();
+        clientChannel.configureBlocking(false);
+        clientChannel.register(selector, SelectionKey.OP_READ);
+        System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
+    }
 
-        public ClientHandler(Socket socket) {
-            this.socket = socket;
+    private static void readData(SelectionKey key) throws IOException {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        int bytesRead = clientChannel.read(buffer);
+
+        if (bytesRead == -1) {
+            System.out.println("Klient kopplade från: " + clientChannel.getRemoteAddress());
+            clientChannel.close();
+            key.cancel();
+            return;
         }
 
-        public void run() {
-            try {
-                input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                output = new PrintWriter(socket.getOutputStream(), true);
+        buffer.flip();
+        String message = new String(buffer.array(), 0, buffer.limit());
+        System.out.println("Meddelande från klient: " + message);
 
-                // Lägg till klientens output stream i listan
-                synchronized (clientOutputs) {
-                    clientOutputs.add(output);
-                }
-
-                output.println("[SERVER] Välkommen till chatten! Skriv 'exit' för att lämna.");
-
-                String message;
-                while ((message = input.readLine()) != null) {
-                    if (message.equalsIgnoreCase("exit")) {
-                        break;
-                    }
-                    System.out.println("[SERVER] Meddelande från klient: " + message);
-                    broadcastMessage("[SERVER] Klient: " + message);
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                synchronized (clientOutputs) {
-                    clientOutputs.remove(output);
-                }
-                System.out.println("[SERVER] En klient har lämnat.");
-            }
-        }
-
-        public static void broadcastMessage(String message) {
-            synchronized (clientOutputs) {
-                for (PrintWriter writer : clientOutputs) {
-                    writer.println(message);
-                }
-            }
-        }
+        // Skicka tillbaka meddelandet till klienten
+        buffer.flip();
+        clientChannel.write(buffer);
     }
 }

@@ -25,11 +25,7 @@ public class Main {
             case "s":
                 System.out.println("Server");
                 new Thread(() -> {
-                    try { // Error
-                        server.main();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    server.main(null);
                 }).start();
                 System.out.println("Startat ny tråd");
 
@@ -45,11 +41,7 @@ public class Main {
                 break;
             case "e":
                 System.out.println("Endast server");
-                try {
-                    server.main();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                server.main(null);
                 break;
             default:
                 System.exit(0);
