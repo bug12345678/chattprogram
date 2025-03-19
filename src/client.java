@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class client {
     public static void main(String ip) throws IOException {
@@ -9,6 +10,10 @@ public class client {
         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+
+        Scanner namn = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Välj ett användarnamn:");
+        String användarnamn = namn.nextLine();  // Read user input
 
         // Starta en tråd för att lyssna på inkommande meddelanden
         new Thread(() -> {
@@ -32,7 +37,7 @@ public class client {
         // Huvudtråd för att skicka meddelanden
         String userInput;
         while ((userInput = consoleInput.readLine()) != null) {
-            output.println(userInput);
+            output.println(användarnamn +": " + userInput);
             if (userInput.equalsIgnoreCase("exit")) {
 
                 break;
