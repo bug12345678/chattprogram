@@ -47,6 +47,7 @@ public class server {    private static final int PORT = 5000;
 
         System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
         sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN");
+
         broadcastMessage("En ny användare har anslutit!\n", clientChannel);
     }
 

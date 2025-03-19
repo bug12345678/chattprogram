@@ -27,11 +27,12 @@ public class client {
                     switch (serverMessage){
                         case "SERVER_EFTERFR_ANVNAMN":
                             output.println(användarnamn);
+                            break;
+                        case "SERVER_EXIT":
+                            close = true;
+                            break;
                     }
-                    if (serverMessage.equals("SERVER_EXIT")) {
-                        close = Boolean.TRUE;
-                        break;
-                    }
+
                     System.out.println(serverMessage);
                 }
                 System.out.println("Server Closed");
