@@ -6,7 +6,7 @@ public class client {
     public static void main(String ip) throws IOException {
         Scanner namn = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Välj ett användarnamn:");
-        String användarnamn = namn.nextLine();  // Read user input
+        String anvnamn = namn.nextLine();  // Read user input
         namn.close();
 
         Socket socket = new Socket(ip, 5000);
@@ -26,7 +26,7 @@ public class client {
                 while ((serverMessage = input.readLine()) != null) {
                     switch (serverMessage){
                         case "SERVER_EFTERFR_ANVNAMN":
-                            output.println(användarnamn);
+                            output.println(anvnamn);
                             break;
                         case "SERVER_EXIT":
                             close = true;
@@ -45,7 +45,7 @@ public class client {
         // Huvudtråd för att skicka meddelanden
         String userInput;
         while ((userInput = consoleInput.readLine()) != null) {
-            output.println(användarnamn +": " + userInput);
+            output.println(anvnamn +": " + userInput);
             if (userInput.equalsIgnoreCase("exit")) {
 
                 break;
