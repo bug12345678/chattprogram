@@ -1,15 +1,20 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class client {
     public static void main(String ip) {
         int port = 5000;
+        String anvnamn = "Något";
+        Scanner anvnamnin = new Scanner(System.in);
+        anvnamn = anvnamnin.nextLine();
 
         try (Socket socket = new Socket(ip, port);
              BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))) {
-             String anvnamn = "Något";
+
+
 
 
             System.out.println("[KLIENT] Ansluten till chattservern!");
