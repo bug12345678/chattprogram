@@ -46,7 +46,7 @@ public class server {
         clients.add(clientChannel);
 
         System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
-        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN");
+        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN\n");
         System.out.println("[SERVER] Efterfrågar användarnamn från klienten.");
     }
 
