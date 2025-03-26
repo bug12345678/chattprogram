@@ -83,7 +83,7 @@ public class server {
         clientChannel.register(selector, 1);
         clients.add(clientChannel);
         System.out.println("Ny klient ansluten: " + String.valueOf(clientChannel.getRemoteAddress()));
-        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN");
+        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN\n");
         broadcastMessage("En ny användare har anslutit!\n", clientChannel);
     }
 
@@ -100,7 +100,7 @@ public class server {
         } else {
             buffer.flip();
             String message = new String(buffer.array(), 0, buffer.limit());
-            System.out.println("Meddelande från klient " + message);
+            //System.out.println("Meddelande från klient " + message);
             broadcastMessage(message, clientChannel);
         }
     }
