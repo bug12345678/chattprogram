@@ -1,13 +1,19 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class client {
     public static void main(String ip) {
         int port = 5000;
-        String anvnamn = "Något";
+        String anvnamn = "";
         Scanner anvnamnin = new Scanner(System.in);
-        anvnamn = anvnamnin.nextLine();
+        try {
+            System.out.println("[KLIENT] Ska läsa in användarnamnet.");
+            anvnamn = anvnamnin.nextLine();
+        } catch (NoSuchElementException e) {
+            System.out.println("Fel: Ingen input hittades!");
+        }
 
         try (Socket socket = new Socket(ip, port);
              BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
