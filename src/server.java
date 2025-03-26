@@ -100,7 +100,6 @@ public class server {
         } else {
             buffer.flip();
             String message = new String(buffer.array(), 0, buffer.limit());
-            //System.out.println("Meddelande från klient " + message);
             broadcastMessage(message, clientChannel);
         }
     }
