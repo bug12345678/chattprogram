@@ -18,7 +18,6 @@ import java.util.Set;
 
 public class server {
     private static final int PORT = 5000;
-    Dictionary<SocketChannel, String> anvNamn = new Hashtable();
     private static final Set<SocketChannel> clients = new HashSet();
 
     public server() {
