@@ -6,6 +6,7 @@ public class Main {
         Scanner userchoice = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Starta (k)lient eller (s)erver? ");
         String val = userchoice.nextLine();  // Read user input
+        userchoice.close();
 
         switch (val){
             case "k":
@@ -13,43 +14,29 @@ public class Main {
                 Scanner ipval = new Scanner(System.in);  // Create a Scanner object
                 System.out.println("Skriv in serverns ipadress ");
                 String ip = ipval.nextLine();  // Read user input
+                ipval.close();
 
+                client.main(ip);
 
-                try {
-                    client.main(ip);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
                 break;
 
             case "s":
                 System.out.println("Server");
                 new Thread(() -> {
-                    try { // Error
-                        server.main();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    server.main(null);
                 }).start();
                 System.out.println("Startat ny tråd");
 
                 System.out.println("Server skapad, kopplar...");
                 Thread.sleep(2000);
                 System.out.println("Startar klient");
-                try {
-                    client.main("localhost");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                client.main("localhost");
+
                 System.out.println("Server startad och kopplad. Välkommen!");
                 break;
             case "e":
                 System.out.println("Endast server");
-                try {
-                    server.main();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                server.main(null);
                 break;
             default:
                 System.exit(0);
