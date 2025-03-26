@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         Scanner userchoice = new Scanner(System.in);  // Don't close this Scanner
-        System.out.println("Starta (k)lient eller (s)erver? ");
+        System.out.println("Starta (k)lient, (s)erver med inbyggd klient eller (e)ndast server? ");
         String val = userchoice.nextLine();
 
         switch (val) {
