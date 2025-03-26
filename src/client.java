@@ -30,7 +30,7 @@ public class client {
             try {
                 String serverMessage;
                 while ((serverMessage = input.readLine()) != null) {
-                    System.out.println(serverMessage);
+
 
                     switch (serverMessage) {
                         case "SERVER_EFTERFR_ANVNAMN":
@@ -38,6 +38,8 @@ public class client {
                             break;
                         case "SERVER_EXIT":
                             return;  // Exit the thread if the server asks
+                        default:
+                            System.out.println(serverMessage);
                     }
                 }
                 System.out.println("Server Closed");
