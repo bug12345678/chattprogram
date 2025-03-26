@@ -1,73 +1,38 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.nio.channels.*;
+import java.util.*;
 
 public class server {
     private static final int PORT = 5000;
-    private static final Set<SocketChannel> clients = new HashSet();
-
-    public server() {
-    }
+    private static final Set<SocketChannel> clients = new HashSet<>();
+    private static final Map<SocketChannel, String> anvNamn = new HashMap<>();
 
     public static void main(String[] args) {
-        try {
-            Selector selector = Selector.open();
+        try (Selector selector = Selector.open();
+             ServerSocketChannel serverChannel = ServerSocketChannel.open()) {
 
-            try {
-                ServerSocketChannel serverChannel = ServerSocketChannel.open();
+            serverChannel.bind(new InetSocketAddress(PORT));
+            serverChannel.configureBlocking(false);
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-                try {
-                    serverChannel.bind(new InetSocketAddress(5000));
-                    serverChannel.configureBlocking(false);
-                    serverChannel.register(selector, 16);
+            System.out.println("Server startad och väntar på anslutningar...");
 
-                    while(true) {
-                        selector.select();
-                        Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+            while (true) {
+                selector.select(); // Väntar på händelser
 
-                        while(keyIterator.hasNext()) {
-                            SelectionKey key = (SelectionKey)keyIterator.next();
-                            keyIterator.remove();
-                            if (key.isAcceptable()) {
-                                acceptClient(selector, serverChannel);
-                            } else if (key.isReadable()) {
-                                readAndBroadcastMessage(key);
-                            }
-                        }
-                    }
-                } catch (Throwable var7) {
-                    if (serverChannel != null) {
-                        try {
-                            serverChannel.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
+                Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+                while (keyIterator.hasNext()) {
+                    SelectionKey key = keyIterator.next();
+                    keyIterator.remove();
 
-                    throw var7;
-                }
-            } catch (Throwable var8) {
-                if (selector != null) {
-                    try {
-                        selector.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
+                    if (key.isAcceptable()) {
+                        acceptClient(selector, serverChannel);
+                    } else if (key.isReadable()) {
+                        handleClientMessage(key);
                     }
                 }
-
-                throw var8;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,47 +42,58 @@ public class server {
     private static void acceptClient(Selector selector, ServerSocketChannel serverChannel) throws IOException {
         SocketChannel clientChannel = serverChannel.accept();
         clientChannel.configureBlocking(false);
-        clientChannel.register(selector, 1);
+        clientChannel.register(selector, SelectionKey.OP_READ);
         clients.add(clientChannel);
-        System.out.println("Ny klient ansluten: " + String.valueOf(clientChannel.getRemoteAddress()));
-        broadcastMessage("En ny användare har anslutit!\n", clientChannel);
+
+        System.out.println("Ny klient ansluten: " + clientChannel.getRemoteAddress());
+        sendMessage(clientChannel, "SERVER_EFTERFR_ANVNAMN\n");
+        System.out.println("[SERVER] Efterfrågar användarnamn från klienten.");
     }
 
-    private static void readAndBroadcastMessage(SelectionKey key) throws IOException {
-        SocketChannel clientChannel = (SocketChannel)key.channel();
+    private static void handleClientMessage(SelectionKey key) throws IOException {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-
-        try {
         int bytesRead = clientChannel.read(buffer);
+
         if (bytesRead == -1) {
-            clients.remove(clientChannel);
-            System.out.println("Klient kopplade från: " + String.valueOf(clientChannel.getRemoteAddress()));
-            broadcastMessage("En användare har lämnat chatten.", clientChannel);
-            clientChannel.close();
+            disconnectClient(clientChannel);
             key.cancel();
-        } else {
-            buffer.flip();
-            String message = new String(buffer.array(), 0, buffer.limit());
-            broadcastMessage(message, clientChannel);
-        } } catch (IOException e) {
-
-            System.out.println("[SERVER] Klient avslutades abrupt.");
-            clients.remove(clientChannel);
-            clientChannel.close();
-            key.cancel();
-
+            return;
         }
+
+        buffer.flip();
+        String message = new String(buffer.array(), 0, buffer.limit()).trim();
+
+        if (!anvNamn.containsKey(clientChannel)) {
+            // Första meddelandet är användarnamnet
+            anvNamn.put(clientChannel, message);
+            System.out.println("Användarnamn registrerat: " + message);
+            sendMessage(clientChannel, "Välkommen " + message + "!");
+            broadcastMessage(message + " har anslutit till chatten.", clientChannel);
+        } else {
+            System.out.println(anvNamn.get(clientChannel) + ": " + message);
+            broadcastMessage(anvNamn.get(clientChannel) + ": " + message, clientChannel);
+        }
+    }
+
+    private static void disconnectClient(SocketChannel clientChannel) throws IOException {
+        clients.remove(clientChannel);
+        String username = anvNamn.getOrDefault(clientChannel, "En anonym användare");
+        System.out.println(username + " kopplade från.");
+        broadcastMessage(username + " har lämnat chatten.", clientChannel);
+        clientChannel.close();
+        anvNamn.remove(clientChannel);
     }
 
     private static void broadcastMessage(String message, SocketChannel sender) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap((message).getBytes());
+        ByteBuffer buffer = ByteBuffer.wrap(("SERVER: " + message).getBytes());
 
-        for(SocketChannel client : clients) {
+        for (SocketChannel client : clients) {
             if (client != sender) {
-                client.write(buffer.duplicate());
+                buffer.rewind(); // Återställ buffertens position
+                client.write(buffer);
             }
         }
-
     }
 
     private static void sendMessage(SocketChannel client, String message) throws IOException {
