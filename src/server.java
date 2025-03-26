@@ -105,7 +105,7 @@ public class server {
     }
 
     private static void broadcastMessage(String message, SocketChannel sender) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(("Klient säger: " + message).getBytes());
+        ByteBuffer buffer = ByteBuffer.wrap((message).getBytes());
 
         for(SocketChannel client : clients) {
             if (client != sender) {

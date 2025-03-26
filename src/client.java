@@ -36,8 +36,6 @@ public class client {
                         case "SERVER_EFTERFR_ANVNAMN":
                             output.println(anvnamn);  // Send username to server
                             break;
-                        case "SERVER_EXIT":
-                            return;  // Exit the thread if the server asks
                         default:
                             System.out.println(serverMessage);
                     }
@@ -57,7 +55,7 @@ public class client {
                 break;
             }
         }
-
+        // Stäng sockel för att lämna chatten.
         socket.close();
         System.out.println("[KLIENT] Du har lämnat chatten.");
     }
