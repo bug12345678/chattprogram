@@ -1,39 +1,62 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class client {
-    public static void main(String ip) {
-        int port = 5000;
+    public client() {
+    }
 
-        try (Socket socket = new Socket(ip, port);
-             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))) {
-             String anvnamn = "Något";
+    public static void main(String ip) throws IOException {
+        // Use BufferedReader to read from console input instead of Scanner
+        BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
 
+        // Ask for the username
+        System.out.println("Välj ett användarnamn:");
+        String anvnamn = consoleInput.readLine(); // Read the username
+        System.out.println("[KLIENT] Användarnamn: " + anvnamn);
 
-            System.out.println("[KLIENT] Ansluten till chattservern!");
+        // Set up socket connection
+        Socket socket = new Socket(ip, 5000);
+        System.out.println("[KLIENT] Ansluten till chattservern!");
 
-            // Vänta på serverns meddelanden
-            while (true) {
-                System.out.println("[KLIENT] Ska läsa input.redline().");
-                String serverMessage = input.readLine();
-                System.out.println("[KLIENT] Har läst input.redline().");
+        // Set up input/output streams for socket
+        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 
-                System.out.println("[KlIENT] Servern säger: " + serverMessage);
-                System.out.println("[KLIENT] Ett Meddelande har mottagits och skrivits ut.");
-                if (serverMessage.equals("SERVER_EFTERFR_ANVNAMN")) {
-                    System.out.print("Skriv ditt användarnamn: ");
-                    System.out.println("[KLIENT] Skickar användarnamn: " + anvnamn);
-                    output.println(anvnamn);  // Skicka användarnamnet till servern
-                    output.flush();
-                } else {
-                    // Skriv ut övriga meddelanden
+        // Thread to listen for server messages
+        new Thread(() -> {
+            try {
+                String serverMessage;
+                while ((serverMessage = input.readLine()) != null) {
                     System.out.println(serverMessage);
+
+                    switch (serverMessage) {
+                        case "SERVER_EFTERFR_ANVNAMN":
+                            output.println(anvnamn);  // Send username to server
+                            break;
+                        case "SERVER_EXIT":
+                            return;  // Exit the thread if the server asks
+                    }
                 }
+                System.out.println("Server Closed");
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            System.err.println("[KLIENT] Anslutningen till servern förlorades.");
+        }).start();
+
+        // Main loop to send user input to the server
+        String userInput;
+        while ((userInput = consoleInput.readLine()) != null) {
+            output.println(anvnamn + ": " + userInput);  // Send message to the server
+            if (userInput.equalsIgnoreCase("exit")) {
+                break;
+            }
         }
+
+        socket.close();
+        System.out.println("[KLIENT] Du har lämnat chatten.");
     }
 }
