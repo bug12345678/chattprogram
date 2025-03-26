@@ -10,9 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Dictionary;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -104,7 +102,7 @@ public class server {
             broadcastMessage(message, clientChannel);
         } } catch (IOException e) {
 
-            System.out.println("client closed program prematurely");
+            System.out.println("[SERVER] Klient avslutades abrupt.");
             clients.remove(clientChannel);
             clientChannel.close();
             key.cancel();
