@@ -30,15 +30,7 @@ public class client {
             try {
                 String serverMessage;
                 while ((serverMessage = input.readLine()) != null) {
-
-
-                    switch (serverMessage) {
-                        case "SERVER_EFTERFR_ANVNAMN":
-                            output.println(anvnamn);  // Send username to server
-                            break;
-                        default:
-                            System.out.println(serverMessage);
-                    }
+                    System.out.println(serverMessage);
                 }
                 System.out.println("Server Closed");
                 socket.close();
