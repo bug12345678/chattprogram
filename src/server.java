@@ -89,6 +89,8 @@ public class server {
     private static void readAndBroadcastMessage(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel)key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+        try {
         int bytesRead = clientChannel.read(buffer);
         if (bytesRead == -1) {
             clients.remove(clientChannel);
@@ -100,6 +102,13 @@ public class server {
             buffer.flip();
             String message = new String(buffer.array(), 0, buffer.limit());
             broadcastMessage(message, clientChannel);
+        } } catch (IOException e) {
+
+            System.out.println("client closed program prematurely");
+            clients.remove(clientChannel);
+            clientChannel.close();
+            key.cancel();
+
         }
     }
 
