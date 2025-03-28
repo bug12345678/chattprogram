@@ -18,6 +18,7 @@ public class Main {
                 // Get the IP address directly
                 System.out.println("Skriv in serverns ipadress ");
                 String ip = ipval.nextLine();
+                ipval.close();
 
                 try {
                     client.main(ip);  // Call the client's main method with the IP
